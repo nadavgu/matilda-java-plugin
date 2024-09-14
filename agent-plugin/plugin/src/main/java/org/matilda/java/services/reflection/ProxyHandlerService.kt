@@ -1,13 +1,11 @@
-package org.matilda.java.services.reflection;
+package org.matilda.java.services.reflection
 
-import org.matilda.commands.MatildaCommand;
-import org.matilda.commands.MatildaDynamicService;
-import org.matilda.java.services.reflection.protobuf.JavaValue;
-
-import java.util.List;
+import org.matilda.commands.MatildaCommand
+import org.matilda.commands.MatildaDynamicService
+import org.matilda.java.services.reflection.protobuf.JavaValue
 
 @MatildaDynamicService
-public interface ProxyHandlerService {
+fun interface ProxyHandlerService {
     @MatildaCommand
-    JavaValue invoke(long methodId, List<JavaValue> argumentIds);
+    operator fun invoke(methodId: Long, argumentIds: List<JavaValue>): JavaValue
 }
