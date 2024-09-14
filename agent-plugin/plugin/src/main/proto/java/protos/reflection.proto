@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_package = "org.matilda.java.services.reflection.protobuf";
+option java_outer_classname = "OuterReflectionClass";
+option java_multiple_files = true;
+
+message JavaType {
+  oneof type {
+    int64 class_id = 1;
+    string primitive_class_name = 2;
+  }
+}
+
+message JavaValue {
+  oneof value {
+    int64 int = 1;
+    bool bool = 2;
+    double float = 3;
+    int64 object_id = 4;
+  }
+}
