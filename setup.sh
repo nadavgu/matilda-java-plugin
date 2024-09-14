@@ -6,7 +6,7 @@ set -e
 GRADLE_DIR="./agent-plugin"   # Change this to the actual directory name
 PYTHON_DIR="."
 
-TEMPLATE_DIR="./template"   # Change this to the actual directory name
+TEMPLATE_DIR="./java"   # Change this to the actual directory name
 PROTO_DIR="$TEMPLATE_DIR/protos"
 GENERATED_DIR="$TEMPLATE_DIR/generated"
 RESOURCES_DIR="$TEMPLATE_DIR/resources"
