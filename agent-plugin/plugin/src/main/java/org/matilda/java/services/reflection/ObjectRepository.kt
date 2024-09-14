@@ -1,37 +1,31 @@
-package org.matilda.java.services.reflection;
+package org.matilda.java.services.reflection
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
-public class ObjectRepository {
+class ObjectRepository @Inject constructor() {
     @Inject
-    ObjectIdGenerator mObjectIdGenerator;
+    lateinit var mObjectIdGenerator: ObjectIdGenerator
 
-    private final Map<Long, Object> mObjects;
+    private val mObjects: MutableMap<Long, Any?> = mutableMapOf()
 
-    @Inject
-    public ObjectRepository() {
-        mObjects = new HashMap<>();
+
+    fun add(obj: Any?): Long {
+        val id = mObjectIdGenerator.generate(obj)
+        mObjects[id] = obj
+        return id
     }
 
-    public long add(Object object) {
-        long id = mObjectIdGenerator.generate(object);
-        mObjects.put(id, object);
-        return id;
-    }
-
-    public Object get(long id) throws NoSuchElementException {
-        if (!mObjects.containsKey(id)) {
-            throw new NoSuchElementException(String.valueOf(id));
+    operator fun get(id: Long) = mObjects.getOrElse(id) {
+        if (mObjects.containsKey(id)) {
+            return null
+        } else {
+            throw NoSuchElementException(id.toString())
         }
-        return mObjects.get(id);
     }
 
-    public void remove(long id) {
-        mObjects.remove(id);
+    fun remove(id: Long) {
+        mObjects.remove(id)
     }
 }

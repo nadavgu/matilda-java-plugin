@@ -1,17 +1,12 @@
-package org.matilda.java.services.reflection;
+package org.matilda.java.services.reflection
 
-import javax.inject.Inject;
-import java.util.Random;
+import java.util.*
+import javax.inject.Inject
 
-public class ObjectIdGenerator {
+class ObjectIdGenerator @Inject internal constructor() {
     @Inject
-    Random mRandom;
-
-    @Inject
-    ObjectIdGenerator() {}
-
-
-    public long generate(Object ignoredObject) {
-        return mRandom.nextLong();
+    lateinit var mRandom: Random
+    fun generate(ignored: Any?): Long {
+        return mRandom.nextLong()
     }
 }
