@@ -11,7 +11,7 @@ import javax.inject.Inject
 class ReflectionUtils @Inject internal constructor() {
     @Inject
     lateinit var mObjectRepository: ObjectRepository
-    fun register(obj: Any?): Long {
+    fun register(obj: Any): Long {
         return mObjectRepository.add(obj)
     }
 
@@ -35,7 +35,7 @@ class ReflectionUtils @Inject internal constructor() {
         return mObjectRepository[fieldId] as Field
     }
 
-    fun getObject(objectId: Long): Any? {
+    fun getObject(objectId: Long): Any {
         return mObjectRepository[objectId]
     }
 
@@ -62,12 +62,12 @@ class ReflectionUtils @Inject internal constructor() {
     }
 
     fun toJavaValue(type: Class<*>, obj: Any?): JavaValue {
-        if (!type.isPrimitive) {
-            return JavaValue.newBuilder().setObjectId(register(obj)).build()
-        }
-
         if (obj == null) {
             return JavaValue.newBuilder().build()
+        }
+
+        if (!type.isPrimitive) {
+            return JavaValue.newBuilder().setObjectId(register(obj)).build()
         }
 
         return when (obj) {
