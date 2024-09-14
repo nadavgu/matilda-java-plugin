@@ -3,7 +3,7 @@ requires = ["setuptools"]
 
 [project]
 name = 'matilda-java-plugin'
-version = '0.3.0'
+version = '0.1.0'
 authors = [{name = 'Nadav Gur', email = 'nadavgu@gmail.com'}]
 dependencies = [
     'matilda'
