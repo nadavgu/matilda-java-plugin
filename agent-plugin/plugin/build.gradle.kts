@@ -37,7 +37,7 @@ ksp {
         File(layout.buildDirectory.asFile.get(), "extracted-include-protos/main/").absolutePath + ":"
                 + File(projectDir, "src/main/proto/").absolutePath
     )
-    arg("javaMainPackage", "org.matilda.template")
+    arg("javaMainPackage", "org.matilda.java")
 }
 
 tasks.test {
@@ -80,7 +80,7 @@ sourceSets {
 }
 
 application {
-    mainClass.set("org.matilda.template.TemplatePlugin")
+    mainClass.set("org.matilda.java.JavaPlugin")
 }
 
 protobuf {

@@ -1,9 +1,9 @@
-package org.matilda.template
+package org.matilda.java
 
 import org.matilda.commands.MatildaCommand
 import org.matilda.commands.MatildaService
-import org.matilda.template.protobuf.Exercise
-import org.matilda.template.protobuf.Operation
+import org.matilda.java.protobuf.Exercise
+import org.matilda.java.protobuf.Operation
 import java.util.stream.Collectors
 
 @MatildaService
