@@ -5,7 +5,7 @@ from java.java_object import JavaObject
 from java.protos import reflection_pb2
 
 JavaPrimitive = Union[int, float, bool]
-JavaValue = Union[JavaObject, JavaPrimitive]
+JavaValue = Union[JavaObject, JavaPrimitive, str]
 OptionalJavaValue = Optional[JavaValue]
 
 
@@ -26,6 +26,8 @@ def convert_value_to_protobuf(value: OptionalJavaValue):
             protobuf.float = value
         elif type(value) == bool:
             protobuf.bool = value
+        elif type(value) == str:
+            protobuf.string = value
         else:
             protobuf.object_id = value.object_id
     return protobuf
