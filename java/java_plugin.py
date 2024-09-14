@@ -1,9 +1,15 @@
+from typing import List
+
 from maddie.dependency import Dependency
 from maddie.dependency_container import DependencyContainer
 from matilda.platform.supported_platforms import ANDROID, JVM
-
-from java.generated.commands.math_service import MathService
 from matilda.plugins.plugin_entry_point import PluginEntryPoint
+
+from java.generated.commands.reflection_service import ReflectionService
+from java.java_class import JavaClass
+from java.java_object import JavaObject
+from java.proxy_handler import ProxyHandler
+from java.proxy_handler_service_impl import ProxyHandlerServiceImpl
 
 PLUGIN_ENTRY_POINTS = {
     JVM: PluginEntryPoint("org.matilda.java.JavaPlugin"),
@@ -16,13 +22,18 @@ def load_plugin(dependencies_container: DependencyContainer):
 
 
 class JavaPlugin(Dependency):
-    def __init__(self, math_service: MathService):
-        self.__math_service = math_service
+    def __init__(self, reflection_service: ReflectionService):
+        self.__reflection_service = reflection_service
 
-    @property
-    def math(self) -> MathService:
-        return self.__math_service
+    def find_class(self, name: str):
+        return JavaClass(self.__reflection_service, self.__reflection_service.find_class(name))
+
+    def new_proxy_instance(self, interfaces: List[JavaClass], proxy_handler: ProxyHandler) -> JavaObject:
+        interface_ids = [interface.object_id for interface in interfaces]
+        proxy_handler_service = ProxyHandlerServiceImpl(self.__reflection_service, proxy_handler)
+        return JavaObject(self.__reflection_service,
+                          self.__reflection_service.new_proxy_instance(interface_ids, proxy_handler_service))
 
     @staticmethod
     def create(dependency_container: DependencyContainer) -> 'JavaPlugin':
-        return JavaPlugin(dependency_container.get(MathService))
+        return JavaPlugin(dependency_container.get(ReflectionService))
