@@ -1,137 +1,120 @@
-package org.matilda.java.services.reflection;
+package org.matilda.java.services.reflection
 
+import org.matilda.java.services.reflection.protobuf.JavaType
+import org.matilda.java.services.reflection.protobuf.JavaValue
+import java.lang.reflect.Constructor
+import java.lang.reflect.Executable
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import javax.inject.Inject
 
-import org.matilda.java.services.reflection.protobuf.JavaType;
-import org.matilda.java.services.reflection.protobuf.JavaValue;
-
-import javax.inject.Inject;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
-public class ReflectionUtils {
+class ReflectionUtils @Inject internal constructor() {
     @Inject
-    ObjectRepository mObjectRepository;
-
-    @Inject
-    ReflectionUtils() {}
-
-    long register(Object object) {
-        return mObjectRepository.add(object);
+    lateinit var mObjectRepository: ObjectRepository
+    fun register(obj: Any?): Long {
+        return mObjectRepository.add(obj)
     }
 
-    Class<?> getClass(long classId) {
-        return (Class<?>) mObjectRepository.get(classId);
+    fun getClass(classId: Long): Class<*> {
+        return mObjectRepository[classId] as Class<*>
     }
 
-    Executable getExecutable(long id) {
-        return (Executable) mObjectRepository.get(id);
+    fun getExecutable(id: Long): Executable {
+        return mObjectRepository[id] as Executable
     }
 
-    Method getMethod(long methodId) {
-        return (Method) mObjectRepository.get(methodId);
+    fun getMethod(methodId: Long): Method {
+        return mObjectRepository[methodId] as Method
     }
 
-    Constructor<?> getConstructor(long constructorId) {
-        return (Constructor<?>) mObjectRepository.get(constructorId);
+    fun getConstructor(constructorId: Long): Constructor<*> {
+        return mObjectRepository[constructorId] as Constructor<*>
     }
 
-    Field getField(long fieldId) {
-        return (Field) mObjectRepository.get(fieldId);
+    fun getField(fieldId: Long): Field {
+        return mObjectRepository[fieldId] as Field
     }
 
-    Object getObject(long objectId) {
-        return mObjectRepository.get(objectId);
+    fun getObject(objectId: Long): Any? {
+        return mObjectRepository[objectId]
     }
 
-    Class<?> fromJavaType(JavaType type) throws ClassNotFoundException {
-        if (type.hasPrimitiveClassName()) {
-            return getPrimitiveClass(type.getPrimitiveClassName());
+    fun fromJavaType(type: JavaType): Class<*> {
+        return if (type.hasPrimitiveClassName()) {
+            getPrimitiveClass(type.primitiveClassName)
         } else {
-            return getClass(type.getClassId());
+            getClass(type.classId)
         }
     }
 
-    JavaType toJavaType(Class<?> type) {
-        JavaType.Builder typeBuilder = JavaType.newBuilder();
-        if (type.isPrimitive()) {
-            typeBuilder.setPrimitiveClassName(type.getCanonicalName());
+    fun toJavaType(type: Class<*>): JavaType {
+        val typeBuilder = JavaType.newBuilder()
+        if (type.isPrimitive) {
+            typeBuilder.setPrimitiveClassName(type.canonicalName)
         } else {
-            typeBuilder.setClassId(register(type));
+            typeBuilder.setClassId(register(type))
         }
-        return typeBuilder.build();
+        return typeBuilder.build()
     }
 
-    private static final Class<?>[] PRIMITIVE_CLASSES = new Class<?>[] {
-            int.class,
-            long.class,
-            short.class,
-            byte.class,
-            boolean.class,
-            double.class,
-            float.class,
-            char.class
-    };
-
-    private Class<?> getPrimitiveClass(String name) throws ClassNotFoundException {
-        return Arrays.stream(PRIMITIVE_CLASSES)
-                .filter(clazz -> clazz.getName().equals(name))
-                .findFirst()
-                .orElseThrow(ClassNotFoundException::new);
+    private fun getPrimitiveClass(name: String): Class<*> {
+        return PRIMITIVE_CLASSES.firstOrNull { it.name == name } ?: throw ClassNotFoundException()
     }
 
-
-    JavaValue toJavaValue(Class<?> type, Object object) {
-        if (!type.isPrimitive()) {
-            return JavaValue.newBuilder().setObjectId(register(object)).build();
+    fun toJavaValue(type: Class<*>, obj: Any?): JavaValue {
+        if (!type.isPrimitive) {
+            return JavaValue.newBuilder().setObjectId(register(obj)).build()
         }
 
-        if (object == null) {
-            return JavaValue.newBuilder().build();
-        } if (object instanceof Integer ) {
-            return JavaValue.newBuilder().setInt((Integer) object).build();
-        } else if (object instanceof Long) {
-            return JavaValue.newBuilder().setInt((Long) object).build();
-        } else if (object instanceof Boolean) {
-            return JavaValue.newBuilder().setBool((Boolean) object).build();
-        } else if (object instanceof Double) {
-            return JavaValue.newBuilder().setFloat((Double) object).build();
-        } else if (object instanceof Float) {
-            return JavaValue.newBuilder().setFloat((Float) object).build();
-        } else {
-            throw new IllegalArgumentException(object.toString());
+        if (obj == null) {
+            return JavaValue.newBuilder().build()
+        }
+
+        return when (obj) {
+            is Int -> JavaValue.newBuilder().setInt(obj.toLong()).build()
+            is Long -> JavaValue.newBuilder().setInt(obj).build()
+            is Boolean -> JavaValue.newBuilder().setBool(obj).build()
+            is Double -> JavaValue.newBuilder().setFloat(obj).build()
+            is Float -> JavaValue.newBuilder().setFloat(obj.toDouble()).build()
+            else -> throw IllegalArgumentException(obj.toString())
         }
     }
 
-    Object fromJavaValue(Class<?> type, JavaValue javaValue) {
-        switch (javaValue.getValueCase()) {
-            case INT: {
-                if (type.equals(byte.class) || type.equals(Byte.class)) {
-                    return (byte) javaValue.getInt();
-                } else if (type.equals(short.class) || type.equals(Short.class)) {
-                    return (short) javaValue.getInt();
-                } else if (type.equals(int.class) || type.equals(Integer.class)) {
-                    return (int) javaValue.getInt();
-                } else if (type.equals(long.class) || type.equals(Long.class)) {
-                    return javaValue.getInt();
-                } else {
-                    throw new IllegalArgumentException(String.valueOf(javaValue.getInt()));
+    fun fromJavaValue(type: Class<*>, javaValue: JavaValue): Any? {
+        return when (javaValue.valueCase) {
+            JavaValue.ValueCase.INT -> {
+                when (type) {
+                    Byte::class.javaPrimitiveType, Byte::class.java -> javaValue.int.toByte()
+                    Short::class.javaPrimitiveType, Short::class.java -> javaValue.int.toShort()
+                    Int::class.javaPrimitiveType, Int::class.java -> javaValue.int.toInt()
+                    Long::class.javaPrimitiveType, Long::class.java -> javaValue.int
+                    else -> throw IllegalArgumentException(javaValue.int.toString())
                 }
             }
-            case BOOL: return javaValue.getBool();
-            case FLOAT: {
-                if (type.equals(float.class) || type.equals(Float.class)) {
-                    return (float) javaValue.getFloat();
-                } else if (type.equals(double.class) || type.equals(Double.class)) {
-                    return javaValue.getFloat();
-                } else {
-                    throw new IllegalArgumentException(String.valueOf(javaValue.getFloat()));
+            JavaValue.ValueCase.BOOL -> javaValue.bool
+            JavaValue.ValueCase.FLOAT -> {
+                when (type) {
+                    Float::class.javaPrimitiveType, Float::class.java -> javaValue.float.toFloat()
+                    Double::class.javaPrimitiveType, Double::class.java -> javaValue.float
+                    else -> throw IllegalArgumentException(javaValue.float.toString())
                 }
             }
-            case OBJECT_ID: return getObject(javaValue.getObjectId());
-            default: return null;
+
+            JavaValue.ValueCase.OBJECT_ID -> getObject(javaValue.objectId)
+            else -> null
         }
+    }
+
+    companion object {
+        private val PRIMITIVE_CLASSES = arrayOf<Class<*>>(
+            Int::class.javaPrimitiveType!!,
+            Long::class.javaPrimitiveType!!,
+            Short::class.javaPrimitiveType!!,
+            Byte::class.javaPrimitiveType!!,
+            Boolean::class.javaPrimitiveType!!,
+            Double::class.javaPrimitiveType!!,
+            Float::class.javaPrimitiveType!!,
+            Char::class.javaPrimitiveType!!
+        )
     }
 }
