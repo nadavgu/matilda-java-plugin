@@ -1,4 +1,4 @@
-package org.matilda.template
+package org.matilda.java
 
 import org.matilda.commands.MatildaCommand
 import org.matilda.commands.MatildaDynamicService

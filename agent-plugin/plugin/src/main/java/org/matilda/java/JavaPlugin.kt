@@ -1,12 +1,12 @@
-package org.matilda.template
+package org.matilda.java
 
 import org.matilda.commands.CommandRegistry
 import org.matilda.commands.PluginDependenciesModule
 
-object TemplatePlugin {
+object JavaPlugin {
     @JvmStatic
     fun createCommandRegistry(pluginDependenciesModule: PluginDependenciesModule): CommandRegistry {
-        return DaggerTemplatePluginComponent.builder()
+        return DaggerJavaPluginComponent.builder()
             .pluginDependenciesModule(pluginDependenciesModule)
             .build()
             .commandRegistry()

@@ -2,7 +2,7 @@
 requires = ["setuptools"]
 
 [project]
-name = 'matilda-template-plugin'
+name = 'matilda-java-plugin'
 version = '0.3.0'
 authors = [{name = 'Nadav Gur', email = 'nadavgu@gmail.com'}]
 dependencies = [
@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.entry-points.'matilda.plugins']
-template = 'template.template_plugin'
+java = 'java.java_plugin'
 
 [tool.setuptools.package-data]
-'template.resources' = ["plugin.jar"]
+'java.resources' = ["plugin.jar"]
