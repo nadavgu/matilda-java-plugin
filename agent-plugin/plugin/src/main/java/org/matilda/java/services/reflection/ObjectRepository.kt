@@ -8,21 +8,17 @@ class ObjectRepository @Inject constructor() {
     @Inject
     lateinit var mObjectIdGenerator: ObjectIdGenerator
 
-    private val mObjects: MutableMap<Long, Any?> = mutableMapOf()
+    private val mObjects: MutableMap<Long, Any> = mutableMapOf()
 
 
-    fun add(obj: Any?): Long {
+    fun add(obj: Any): Long {
         val id = mObjectIdGenerator.generate(obj)
         mObjects[id] = obj
         return id
     }
 
     operator fun get(id: Long) = mObjects.getOrElse(id) {
-        if (mObjects.containsKey(id)) {
-            return null
-        } else {
-            throw NoSuchElementException(id.toString())
-        }
+        throw NoSuchElementException(id.toString())
     }
 
     fun remove(id: Long) {
