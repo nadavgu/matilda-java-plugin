@@ -17,5 +17,6 @@ message JavaValue {
     bool bool = 2;
     double float = 3;
     int64 object_id = 4;
+    string string = 5;
   }
 }

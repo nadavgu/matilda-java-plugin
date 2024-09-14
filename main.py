@@ -18,6 +18,8 @@ if __name__ == '__main__':
                 print(f"Running in new thread!")
                 time.sleep(5)
                 print("Finished running in new thread!")
+            elif method.name == 'toString':
+                return "Hellllooooo"
             else:
                 print(f"What is this: {method.name}({args})")
 
@@ -32,3 +34,4 @@ if __name__ == '__main__':
         print("started new thread")
         thread_class.get_method("join").invoke(thread)
         print("finished waiting for new thread")
+        print(java_plugin.find_class("java.lang.Object").get_method("toString").invoke(proxy))

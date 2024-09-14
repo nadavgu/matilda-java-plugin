@@ -67,7 +67,10 @@ class ReflectionUtils @Inject internal constructor() {
         }
 
         if (!type.isPrimitive) {
-            return JavaValue.newBuilder().setObjectId(register(obj)).build()
+            return when (obj) {
+                is String -> JavaValue.newBuilder().setString(obj).build()
+                else -> JavaValue.newBuilder().setObjectId(register(obj)).build()
+            }
         }
 
         return when (obj) {
@@ -99,7 +102,7 @@ class ReflectionUtils @Inject internal constructor() {
                     else -> throw IllegalArgumentException(javaValue.float.toString())
                 }
             }
-
+            JavaValue.ValueCase.STRING -> javaValue.string
             JavaValue.ValueCase.OBJECT_ID -> getObject(javaValue.objectId)
             else -> null
         }
