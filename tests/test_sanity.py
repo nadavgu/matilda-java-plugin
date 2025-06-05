@@ -43,6 +43,7 @@ class TestSanity:
         method = integer_class.get_method("valueOf", JavaPrimitiveType.INT)
         assert method.is_static
         assert method.name == "valueOf"
+        assert repr(method.return_type) == repr(integer_class)
         assert method.parameter_types == [JavaPrimitiveType.INT]
 
     def test_invoke_static_method(self, plugin: JavaPlugin):
@@ -56,6 +57,7 @@ class TestSanity:
         method = integer_class.get_method("intValue")
         assert not method.is_static
         assert method.name == "intValue"
+        assert method.return_type == JavaPrimitiveType.INT
         assert method.parameter_types == []
 
     def test_invoke_instance_method(self, plugin: JavaPlugin):

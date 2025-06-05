@@ -102,6 +102,11 @@ class ReflectionService @Inject constructor() {
         return invokeMethod(null, methodId, arguments)
     }
 
+    @MatildaCommand
+    fun getMethodReturnType(methodId: Long): JavaType {
+        return mReflectionUtils.toJavaType(mReflectionUtils.getMethod(methodId).returnType)
+    }
+
     private fun invokeMethod(receiver: Any?, methodId: Long, arguments: List<JavaValue>): JavaValue {
         val method = mReflectionUtils.getMethod(methodId)
         val objectArguments = convertMethodArguments(method, arguments)

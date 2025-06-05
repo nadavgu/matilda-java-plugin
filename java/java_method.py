@@ -1,5 +1,7 @@
 from functools import cached_property
 
+from java.java_type import JavaType, get_type_from_protobuf
+
 from java.generated.commands.reflection_service import ReflectionService
 from java.java_executable import JavaExecutable
 from java.java_object import JavaObject
@@ -13,7 +15,7 @@ class JavaMethod(JavaExecutable):
 
     def __str__(self):
         from java.java_type import get_type_name
-        return f"{'static ' if self.is_static else ''}{self.name}({', '.join(map(get_type_name, self.parameter_types))})"
+        return f"{'static ' if self.is_static else ''}{get_type_name(self.return_type)} {self.name}({', '.join(map(get_type_name, self.parameter_types))})"
 
     def __repr__(self):
         return f"JavaMethod({str(self)})"
@@ -31,3 +33,8 @@ class JavaMethod(JavaExecutable):
         result = self.__reflection_service.invoke_static_method(self.object_id,
                                                                 [convert_value_to_protobuf(arg) for arg in args])
         return get_value_from_protobuf(self.__reflection_service, result)
+
+    @cached_property
+    def return_type(self) -> JavaType:
+        return get_type_from_protobuf(self.__reflection_service,
+                                      self.__reflection_service.get_method_return_type(self.object_id))
