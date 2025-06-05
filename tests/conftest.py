@@ -8,7 +8,7 @@ from matilda.matilda_process import MatildaProcess
 from matilda.platform.matilda_platform import MatildaPlatform
 from matilda.platform.supported_platforms import JVM, LINUX_X64, ANDROID
 
-from template.template_plugin import TemplatePlugin
+from java.java_plugin import JavaPlugin
 
 
 def pytest_addoption(parser):
@@ -54,5 +54,5 @@ def matilda_process(matilda_platform: MatildaPlatform, matilda: Matilda) -> Gene
         raise ValueError(matilda_platform)
 
 @pytest.fixture(scope='session')
-def plugin(matilda_process) -> TemplatePlugin:
-    return matilda_process.plugins.template
+def plugin(matilda_process) -> JavaPlugin:
+    return matilda_process.plugins.java
